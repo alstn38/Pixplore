@@ -45,6 +45,10 @@ final class SearchViewController: UIViewController {
         
         searchView.pictureCollectionView.delegate = self
         searchView.pictureCollectionView.dataSource = self
+        searchView.pictureCollectionView.register(
+            SearchPictureCollectionViewCell.self,
+            forCellWithReuseIdentifier: SearchPictureCollectionViewCell.identifier
+        )
     }
 }
 
@@ -61,7 +65,7 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         case searchView.colorCollectionView:
             return colorFilterArray.count
         case searchView.pictureCollectionView:
-            return 0
+            return 10
         default:
             return 0
         }
@@ -75,6 +79,12 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
                 for: indexPath
             ) as? ColorCollectionViewCell else { return UICollectionViewCell() }
             cell.configureCell(colorFilterArray[indexPath.row])
+            return cell
+        case searchView.pictureCollectionView:
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: SearchPictureCollectionViewCell.identifier,
+                for: indexPath
+            ) as? SearchPictureCollectionViewCell else { return UICollectionViewCell() }
             return cell
         default:
             return UICollectionViewCell()
