@@ -44,6 +44,11 @@ final class ColorCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func configureCell(_ colorType: ColorFilter) {
+        colorView.backgroundColor = colorType.uiColor
+        colorLabel.text = colorType.description
+    }
+    
     private func configureHierarchy() {
         addSubviews(
             roundBackgroundView,
