@@ -11,6 +11,7 @@ final class SearchViewController: UIViewController {
     
     private let searchView = SearchView()
     private let colorFilterArray: [ColorFilter] = ColorFilter.allCases
+    private var sortingType: SearchView.SortingButtonType = .relevant
     private let searchController: UISearchController = {
         let searchController = UISearchController()
         searchController.searchBar.placeholder = StringLiterals.Search.searchBarPlaceholder
@@ -26,6 +27,18 @@ final class SearchViewController: UIViewController {
         
         configureNavigation()
         configureDelegate()
+        configureAddTarget()
+        searchView.configureSortingButton(sortingType)
+        
+//        let endPoint = SearchEndPoint.searchPicture(query: "banana", page: 1, perPage: 20, orderBy: "latest", color: "green")
+//        NetworkService.shared.request(endPoint: endPoint, responseType: SearchPicture.self) { response in
+//            switch response {
+//            case .success(let success):
+//                dump(success)
+//            case .failure(let failure):
+//                print(failure.description)
+//            }
+//        }
     }
     
     private func configureNavigation() {
@@ -49,6 +62,15 @@ final class SearchViewController: UIViewController {
             SearchPictureCollectionViewCell.self,
             forCellWithReuseIdentifier: SearchPictureCollectionViewCell.identifier
         )
+    }
+    
+    private func configureAddTarget() {
+        searchView.sortingButton.addTarget(self, action: #selector(sortingButtonDidTap), for: .touchUpInside)
+    }
+    
+    @objc private func sortingButtonDidTap(_ sender: UIButton) {
+        sortingType.toggle()
+        searchView.configureSortingButton(sortingType)
     }
 }
 
