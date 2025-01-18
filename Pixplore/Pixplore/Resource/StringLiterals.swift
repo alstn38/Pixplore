@@ -29,4 +29,9 @@ enum StringLiterals {
         static let downloadTitle: String = "다운로드"
         static let viewTitle: String = "조회"
     }
+    
+    enum Alert {
+        static let warningTitle: String = "경고"
+        static let confirmTitle: String = "확인"
+    }
 }
