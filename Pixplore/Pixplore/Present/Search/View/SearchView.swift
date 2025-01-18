@@ -70,6 +70,11 @@ final class SearchView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func configureSearchDescription(_ type: searchDescriptionType) {
+        searchDescriptionLabel.isHidden = type.isHidden
+        searchDescriptionLabel.text = type.description
+    }
+    
     func configureSortingButton(_ type: SortingButtonType) {
         var configuration = UIButton.Configuration.plain()
         var titleContainer = AttributeContainer()
@@ -120,6 +125,7 @@ final class SearchView: UIView {
     }
 }
 
+// MARK: - SortingButtonType
 extension SearchView {
     enum SortingButtonType: String {
         case relevant
@@ -149,6 +155,39 @@ extension SearchView {
                 self = .latest
             case .latest:
                 self = .relevant
+            }
+        }
+    }
+}
+
+
+// MARK: - searchDescriptionType
+extension SearchView {
+    
+    enum searchDescriptionType {
+        case searchGuide
+        case noResult
+        case hidden
+        
+        var description: String {
+            switch self {
+            case .searchGuide:
+                return StringLiterals.Search.searchGuideText
+            case .noResult:
+                return StringLiterals.Search.searchGuideText
+            case .hidden:
+                return ""
+            }
+        }
+        
+        var isHidden: Bool {
+            switch self {
+            case .searchGuide:
+                return false
+            case .noResult:
+                return false
+            case .hidden:
+                return true
             }
         }
     }
