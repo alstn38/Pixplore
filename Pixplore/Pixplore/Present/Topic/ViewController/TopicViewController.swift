@@ -39,6 +39,11 @@ final class TopicViewController: UIViewController {
             TopicPictureCollectionViewCell.self,
             forCellWithReuseIdentifier: TopicPictureCollectionViewCell.identifier
         )
+        topicView.topicPictureCollectionView.register(
+            TopicPictureHeaderView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: TopicPictureHeaderView.identifier
+        )
     }
 }
 
@@ -47,6 +52,21 @@ extension TopicViewController: UICollectionViewDelegate, UICollectionViewDataSou
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return topicPictureArray.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        switch kind {
+        case UICollectionView.elementKindSectionHeader:
+            guard let header = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: TopicPictureHeaderView.identifier,
+                for: indexPath
+            ) as? TopicPictureHeaderView else { return UICollectionReusableView() }
+            header.configureView(sectionTitle: topicPictureArray[indexPath.section].sectionHeaderTitle)
+            return header
+        default:
+            return UICollectionReusableView()
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
