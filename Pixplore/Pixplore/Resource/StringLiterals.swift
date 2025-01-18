@@ -17,4 +17,12 @@ enum StringLiterals {
     enum Topic {
         static let title: String = "OUR TOPIC"
     }
+    
+    enum DetailPicture {
+        static let infoTitle: String = "정보"
+        static let sizeTitle: String = "크기"
+        static let viewCountTitle: String = "조회수"
+        static let downloadTitle: String = "다운로드"
+        static let viewTitle: String = "조회"
+    }
 }
