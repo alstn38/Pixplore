@@ -20,6 +20,7 @@ final class SearchView: UIView {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
+        collectionView.keyboardDismissMode = .onDrag
         return collectionView
     }()
     
@@ -36,6 +37,7 @@ final class SearchView: UIView {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
+        collectionView.keyboardDismissMode = .onDrag
         return collectionView
     }()
     
