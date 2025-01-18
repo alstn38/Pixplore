@@ -39,6 +39,25 @@ final class SearchView: UIView {
         return collectionView
     }()
     
+    let searchDescriptionLabel: UILabel = {
+        let label = UILabel()
+        label.text = StringLiterals.Search.searchGuideText
+        label.font = .systemFont(ofSize: 14, weight: .bold)
+        label.numberOfLines = 1
+        label.textAlignment = .center
+        return label
+    }()
+    
+    let sortingButton: UIButton = {
+        let button = UIButton()
+        button.layer.cornerRadius = 10
+        button.layer.borderColor = UIColor.systemGray6.cgColor
+        button.layer.borderWidth = 1
+        button.clipsToBounds = true
+        button.backgroundColor = .white
+        return button
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureView()
@@ -51,6 +70,19 @@ final class SearchView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func configureSortingButton(_ type: SortingButtonType) {
+        var configuration = UIButton.Configuration.plain()
+        var titleContainer = AttributeContainer()
+        titleContainer.font = .boldSystemFont(ofSize: 12)
+        configuration.attributedTitle = AttributedString(type.title, attributes: titleContainer)
+        configuration.baseBackgroundColor = .white
+        configuration.baseForegroundColor = .black
+        configuration.image = type.image
+        configuration.titleAlignment = .leading
+        configuration.imagePadding = 10
+        sortingButton.configuration = configuration
+    }
+    
     private func configureView() {
         backgroundColor = .white
     }
@@ -58,7 +90,9 @@ final class SearchView: UIView {
     private func configureHierarchy() {
         addSubviews(
             colorCollectionView,
-            pictureCollectionView
+            pictureCollectionView,
+            searchDescriptionLabel,
+            sortingButton
         )
     }
     
@@ -71,6 +105,51 @@ final class SearchView: UIView {
         pictureCollectionView.snp.makeConstraints {
             $0.top.equalTo(colorCollectionView.snp.bottom).offset(10)
             $0.horizontalEdges.bottom.equalTo(safeAreaLayoutGuide)
+        }
+        
+        searchDescriptionLabel.snp.makeConstraints {
+            $0.center.equalTo(pictureCollectionView)
+        }
+        
+        sortingButton.snp.makeConstraints {
+            $0.bottom.equalTo(colorCollectionView).offset(1)
+            $0.trailing.equalTo(safeAreaLayoutGuide).offset(8)
+            $0.width.equalTo(95)
+            $0.height.equalTo(26)
+        }
+    }
+}
+
+extension SearchView {
+    enum SortingButtonType: String {
+        case relevant
+        case latest
+        
+        var title: String {
+            switch self {
+            case .relevant:
+                return StringLiterals.Search.sortButtonRelevant
+            case .latest:
+                return StringLiterals.Search.sortButtonLatest
+            }
+        }
+        
+        var image: UIImage? {
+            switch self {
+            case .relevant:
+                return UIImage(systemName: "line.horizontal.3.decrease")
+            case .latest:
+                return UIImage(systemName: "clock.arrow.trianglehead.counterclockwise.rotate.90")
+            }
+        }
+        
+        mutating func toggle() {
+            switch self {
+            case .relevant:
+                self = .latest
+            case .latest:
+                self = .relevant
+            }
         }
     }
 }
