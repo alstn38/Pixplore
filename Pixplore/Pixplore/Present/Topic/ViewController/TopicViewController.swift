@@ -27,8 +27,17 @@ final class TopicViewController: UIViewController {
         configureDelegate()
     }
     
-    private func configureNavigation() {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         navigationController?.navigationBar.prefersLargeTitles = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.navigationBar.prefersLargeTitles = false
+    }
+    
+    private func configureNavigation() {
         navigationItem.title = StringLiterals.Topic.title
     }
     
@@ -96,5 +105,10 @@ extension TopicViewController: UICollectionViewDelegate, UICollectionViewDataSou
         }
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let detailPictureViewController = DetailPictureViewController()
+        navigationController?.pushViewController(detailPictureViewController, animated: true)
     }
 }
