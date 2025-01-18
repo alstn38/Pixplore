@@ -5,6 +5,7 @@
 //  Created by 강민수 on 1/17/25.
 //
 
+import Kingfisher
 import SnapKit
 import UIKit
 
@@ -33,7 +34,6 @@ final class SearchPictureCollectionViewCell: UICollectionViewCell {
     
     private let starCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "1,543" // TODO: 서버 통신 이후 삭제
         label.textColor = .white
         label.numberOfLines = 1
         label.font = .systemFont(ofSize: 10, weight: .medium)
@@ -52,8 +52,10 @@ final class SearchPictureCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell() {
-        
+    func configureCell(_ picture: Picture) {
+        let url = URL(string: picture.urls.smallSizeLink)
+        searchedPictureImageView.kf.setImage(with: url)
+        starCountLabel.text = picture.likes.formatted()
     }
     
     private func configureHierarchy() {

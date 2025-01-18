@@ -13,11 +13,21 @@ final class SearchViewController: UIViewController {
     private let colorFilterArray: [ColorFilter] = ColorFilter.allCases
     private var colorFilterType: ColorFilter?
     private var sortingType: SearchView.SortingButtonType = .relevant
+    private var totalPage: Int = 1
+    private var currentPage: Int = 1
+    private var recentSearchedText: String?
     private var searchDescriptionType: SearchView.searchDescriptionType = .searchGuide {
         didSet {
-            searchView.configureSearchDescription(oldValue)
+            searchView.configureSearchDescription(searchDescriptionType)
         }
     }
+    private var searchPictureArray: [Picture] = [] {
+        didSet {
+            searchView.pictureCollectionView.reloadData()
+            searchDescriptionType = searchPictureArray.isEmpty ? .noResult : .hidden
+        }
+    }
+    
     private let searchController: UISearchController = {
         let searchController = UISearchController()
         searchController.searchBar.placeholder = StringLiterals.Search.searchBarPlaceholder
@@ -36,16 +46,6 @@ final class SearchViewController: UIViewController {
         configureAddTarget()
         searchView.configureSortingButton(sortingType)
         searchView.configureSearchDescription(searchDescriptionType)
-        
-//        let endPoint = SearchEndPoint.searchPicture(query: "banana", page: 1, perPage: 20, orderBy: "latest", color: "green")
-//        NetworkService.shared.request(endPoint: endPoint, responseType: SearchPicture.self) { response in
-//            switch response {
-//            case .success(let success):
-//                dump(success)
-//            case .failure(let failure):
-//                print(failure.description)
-//            }
-//        }
     }
     
     private func configureNavigation() {
@@ -54,7 +54,7 @@ final class SearchViewController: UIViewController {
     }
     
     private func configureDelegate() {
-        searchController.delegate = self
+        searchController.searchBar.delegate = self
         
         searchView.colorCollectionView.delegate = self
         searchView.colorCollectionView.dataSource = self
@@ -75,15 +75,45 @@ final class SearchViewController: UIViewController {
         searchView.sortingButton.addTarget(self, action: #selector(sortingButtonDidTap), for: .touchUpInside)
     }
     
+    private func getSearchedPicture(query: String) {
+        let endPoint = SearchEndPoint.searchPicture(
+            query: query,
+            page: currentPage,
+            orderBy: sortingType.rawValue,
+            color: colorFilterType?.rawValue
+        )
+        
+        NetworkService.shared.request(endPoint: endPoint, responseType: SearchPicture.self) { [weak self] response in
+            guard let self else { return }
+            switch response {
+            case .success(let value):
+                self.totalPage = value.totalPages
+                searchPictureArray = value.results
+            case .failure(let error):
+                self.presentWarningAlert(message: error.description)
+            }
+        }
+    }
+    
     @objc private func sortingButtonDidTap(_ sender: UIButton) {
         sortingType.toggle()
         searchView.configureSortingButton(sortingType)
     }
 }
 
-// MARK: - UISearchControllerDelegate
-extension SearchViewController: UISearchControllerDelegate {
+// MARK: - UISearchBarDelegate
+extension SearchViewController: UISearchBarDelegate {
     
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchedText = searchBar.text else { return }
+        guard
+            !searchedText.isEmpty,
+            recentSearchedText != searchedText
+        else { return }
+        
+        recentSearchedText = searchedText
+        getSearchedPicture(query: searchedText)
+    }
 }
 
 // MARK: - UICollectionViewDelegate, UICollectionViewDataSource
@@ -94,7 +124,7 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         case searchView.colorCollectionView:
             return colorFilterArray.count
         case searchView.pictureCollectionView:
-            return 10
+            return searchPictureArray.count
         default:
             return 0
         }
@@ -103,20 +133,27 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch collectionView {
         case searchView.colorCollectionView:
+            let colorFilter = colorFilterArray[indexPath.row]
             guard let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: ColorCollectionViewCell.identifier,
                 for: indexPath
             ) as? ColorCollectionViewCell else { return UICollectionViewCell() }
-            let colorFilter = colorFilterArray[indexPath.row]
+            
             cell.configureCell(colorFilter)
             cell.configureCell(isSelected: colorFilter == colorFilterType)
+            
             return cell
+            
         case searchView.pictureCollectionView:
             guard let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: SearchPictureCollectionViewCell.identifier,
                 for: indexPath
             ) as? SearchPictureCollectionViewCell else { return UICollectionViewCell() }
+            
+            cell.configureCell(searchPictureArray[indexPath.item])
+            
             return cell
+            
         default:
             return UICollectionViewCell()
         }
