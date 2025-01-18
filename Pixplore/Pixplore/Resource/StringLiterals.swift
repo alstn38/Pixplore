@@ -12,6 +12,10 @@ enum StringLiterals {
     enum Search {
         static let title: String = "SEARCH PHOTO"
         static let searchBarPlaceholder: String = "키워드 검색"
+        static let searchGuideText: String = "사진을 검색해보세요."
+        static let searchNoResult: String = "검색 결과가 없어요."
+        static let sortButtonRelevant: String = "관련순"
+        static let sortButtonLatest: String = "최신순"
     }
     
     enum Topic {
