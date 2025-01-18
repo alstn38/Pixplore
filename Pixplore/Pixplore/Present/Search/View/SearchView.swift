@@ -69,7 +69,7 @@ final class SearchView: UIView {
         }
         
         pictureCollectionView.snp.makeConstraints {
-            $0.top.equalTo(colorCollectionView.snp.bottom)
+            $0.top.equalTo(colorCollectionView.snp.bottom).offset(10)
             $0.horizontalEdges.bottom.equalTo(safeAreaLayoutGuide)
         }
     }
