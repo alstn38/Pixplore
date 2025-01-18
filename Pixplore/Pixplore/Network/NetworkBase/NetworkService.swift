@@ -25,7 +25,7 @@ final class NetworkService {
         AF.request(
             url,
             method: endPoint.httpMethod,
-            parameters: endPoint.params,
+            parameters: endPoint.parameters,
             headers: HTTPHeaders(endPoint.headers ?? [:])
         )
         .validate(statusCode: 200...299)
@@ -34,9 +34,7 @@ final class NetworkService {
             switch response.result {
             case .success(let value):
                 completionHandler(.success(value))
-            case .failure(let error):
-                print(response.response?.statusCode)
-                print(error.localizedDescription)
+            case .failure(_):
                 let errorType = self.getNetworkError(statusCode: response.response?.statusCode)
                 completionHandler(.failure(errorType))
             }

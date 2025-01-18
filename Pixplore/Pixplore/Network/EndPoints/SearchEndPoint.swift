@@ -14,7 +14,7 @@ enum SearchEndPoint: EndPointProtocol {
         page: Int,
         perPage: Int = 20,
         orderBy: String,
-        color: String
+        color: String?
     )
 }
 
@@ -46,16 +46,21 @@ extension SearchEndPoint {
         return ["Authorization": Secret.clientID]
     }
     
-    var params: Parameters? {
+    var parameters: Parameters? {
         switch self {
         case .searchPicture(let query, let page, let perPage, let orderBy, let color):
-            return [
+            var parameters: [String: Any] = [
                 "query": query,
                 "page": page,
                 "per_page": perPage,
-                "order_by": orderBy,
-                "color": color
+                "order_by": orderBy
             ]
+            
+            if let color {
+                parameters["color"] = color
+            }
+            
+            return parameters
         }
     }
 }

@@ -14,5 +14,5 @@ protocol EndPointProtocol {
     var path: String { get }
     var httpMethod: HTTPMethod { get }
     var headers: [String: String]? { get }
-    var params: Parameters? { get }
+    var parameters: Parameters? { get }
 }
