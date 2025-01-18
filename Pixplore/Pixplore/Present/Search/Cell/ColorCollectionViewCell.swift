@@ -44,9 +44,22 @@ final class ColorCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        roundBackgroundView.backgroundColor = .systemGray6
+        colorLabel.textColor = .black
+    }
+    
     func configureCell(_ colorType: ColorFilter) {
         colorView.backgroundColor = colorType.uiColor
         colorLabel.text = colorType.description
+    }
+    
+    func configureCell(isSelected: Bool) {
+        let roundBackgroundViewColor = isSelected ? UIColor.systemBlue : UIColor.systemGray6
+        let colorLabelColor = isSelected ? UIColor.white : UIColor.black
+        roundBackgroundView.backgroundColor = roundBackgroundViewColor
+        colorLabel.textColor = colorLabelColor
     }
     
     private func configureHierarchy() {
