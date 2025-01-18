@@ -90,11 +90,11 @@ extension TopicView {
         
         var sectionHeaderTitle: String {
             switch self {
-            case .goldenHour(let array):
+            case .goldenHour:
                 return "골든 아워"
-            case .business(let array):
+            case .business:
                 return "비즈니스 및 업무"
-            case .architecture(let array):
+            case .architecture:
                 return "건축 및 인테리어"
             }
         }
