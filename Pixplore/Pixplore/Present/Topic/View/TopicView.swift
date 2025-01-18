@@ -84,9 +84,9 @@ final class TopicView: UIView {
 extension TopicView {
     
     enum TopicSection {
-        case goldenHour([TopicPicture])
-        case business([TopicPicture])
-        case architecture([TopicPicture])
+        case goldenHour([Picture])
+        case business([Picture])
+        case architecture([Picture])
         
         var sectionHeaderTitle: String {
             switch self {
