@@ -11,7 +11,13 @@ final class SearchViewController: UIViewController {
     
     private let searchView = SearchView()
     private let colorFilterArray: [ColorFilter] = ColorFilter.allCases
+    private var colorFilterType: ColorFilter?
     private var sortingType: SearchView.SortingButtonType = .relevant
+    private var searchDescriptionType: SearchView.searchDescriptionType = .searchGuide {
+        didSet {
+            searchView.configureSearchDescription(oldValue)
+        }
+    }
     private let searchController: UISearchController = {
         let searchController = UISearchController()
         searchController.searchBar.placeholder = StringLiterals.Search.searchBarPlaceholder
@@ -29,6 +35,7 @@ final class SearchViewController: UIViewController {
         configureDelegate()
         configureAddTarget()
         searchView.configureSortingButton(sortingType)
+        searchView.configureSearchDescription(searchDescriptionType)
         
 //        let endPoint = SearchEndPoint.searchPicture(query: "banana", page: 1, perPage: 20, orderBy: "latest", color: "green")
 //        NetworkService.shared.request(endPoint: endPoint, responseType: SearchPicture.self) { response in
@@ -100,7 +107,9 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
                 withReuseIdentifier: ColorCollectionViewCell.identifier,
                 for: indexPath
             ) as? ColorCollectionViewCell else { return UICollectionViewCell() }
-            cell.configureCell(colorFilterArray[indexPath.row])
+            let colorFilter = colorFilterArray[indexPath.row]
+            cell.configureCell(colorFilter)
+            cell.configureCell(isSelected: colorFilter == colorFilterType)
             return cell
         case searchView.pictureCollectionView:
             guard let cell = collectionView.dequeueReusableCell(
@@ -110,6 +119,33 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
             return cell
         default:
             return UICollectionViewCell()
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch collectionView {
+        case searchView.colorCollectionView:
+            let isSameFilter: Bool = colorFilterType == colorFilterArray[indexPath.item]
+            colorFilterType = isSameFilter ? nil : colorFilterArray[indexPath.item]
+            
+            guard let cell = collectionView.cellForItem(at: indexPath) as? ColorCollectionViewCell else { return }
+            cell.configureCell(isSelected: !isSameFilter)
+        case searchView.pictureCollectionView:
+            print(#function)
+        default:
+            return
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        switch collectionView {
+        case searchView.colorCollectionView:
+            guard let cell = collectionView.cellForItem(at: indexPath) as? ColorCollectionViewCell else { return }
+            cell.configureCell(isSelected: false)
+        case searchView.pictureCollectionView:
+            print(#function)
+        default:
+            return
         }
     }
 }
