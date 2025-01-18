@@ -27,9 +27,24 @@ final class TopicView: UIView {
         )
         
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+        let headerSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .absolute(40)
+        )
+        
+        let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: headerSize,
+            elementKind: UICollectionView.elementKindSectionHeader,
+            alignment: .top
+        )
+        
         let section = NSCollectionLayoutSection(group: group)
+        section.boundarySupplementaryItems = [sectionHeader]
         section.orthogonalScrollingBehavior = .continuous
-        section.contentInsets = NSDirectionalEdgeInsets(top: 20, leading: 20, bottom: 20, trailing: 20)
+        section.contentInsets = NSDirectionalEdgeInsets(
+            top: 0, leading: 20, bottom: 0, trailing: 20
+        )
+        
         let layout = UICollectionViewCompositionalLayout(section: section)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.showsVerticalScrollIndicator = false
@@ -72,5 +87,16 @@ extension TopicView {
         case goldenHour([TopicPicture])
         case business([TopicPicture])
         case architecture([TopicPicture])
+        
+        var sectionHeaderTitle: String {
+            switch self {
+            case .goldenHour(let array):
+                return "골든 아워"
+            case .business(let array):
+                return "비즈니스 및 업무"
+            case .architecture(let array):
+                return "건축 및 인테리어"
+            }
+        }
     }
 }
