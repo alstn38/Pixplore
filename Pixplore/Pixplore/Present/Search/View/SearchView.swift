@@ -15,7 +15,7 @@ final class SearchView: UIView {
         let insetSpacing: CGFloat = 10
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = insetSpacing
-        layout.sectionInset = UIEdgeInsets(top: insetSpacing, left: insetSpacing, bottom: insetSpacing, right: insetSpacing)
+        layout.sectionInset = UIEdgeInsets(top: insetSpacing, left: insetSpacing, bottom: insetSpacing, right: insetSpacing * 10)
         layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.showsHorizontalScrollIndicator = false
