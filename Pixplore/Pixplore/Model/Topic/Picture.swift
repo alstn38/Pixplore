@@ -8,9 +8,9 @@
 import Foundation
 
 // MARK: - TopicPicture
-struct TopicPicture: Decodable {
+struct Picture: Decodable {
     let id: String
-    let createdAt: Date
+    let createdAt: String
     let width: Int
     let height: Int
     let urls: URLs
@@ -59,9 +59,9 @@ struct ProfileImage: Codable {
     }
 }
 
-let dummyTopicPictures: TopicPicture = TopicPicture(
+let dummyTopicPictures: Picture = Picture(
     id: "1",
-    createdAt: Date(), // 현재 시간 사용
+    createdAt: "ddd",
     width: 1920,
     height: 1080,
     urls: URLs(
