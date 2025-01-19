@@ -26,7 +26,7 @@ final class NetworkService {
             url,
             method: endPoint.httpMethod,
             parameters: endPoint.parameters,
-            headers: HTTPHeaders(endPoint.headers ?? [:])
+            headers: endPoint.headers
         )
         .validate(statusCode: 200...299)
         .responseDecodable(of: T.self) { [weak self] response in

@@ -42,7 +42,7 @@ extension SearchEndPoint {
         }
     }
     
-    var headers: [String : String]? {
+    var headers: HTTPHeaders? {
         return ["Authorization": Secret.clientID]
     }
     
