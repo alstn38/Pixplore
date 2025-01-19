@@ -12,6 +12,14 @@ import UIKit
 
 final class DetailPictureView: UIView {
     
+    private let serverDateFormatter = ISO8601DateFormatter()
+    private let dateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "ko_KR")
+        dateFormatter.dateFormat = "yyyy년 M월 d일 게시됨"
+        return dateFormatter
+    }()
+    
     private let detailScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = false
@@ -156,14 +164,21 @@ final class DetailPictureView: UIView {
         userProfileImageView.kf.setImage(with: profileURL)
         detailPictureImageView.kf.setImage(with: detailImageURL)
         userNameLabel.text = picture.user.name
-        pictureDateLabel.text = picture.createdAt
         sizeLabel.text = "\(picture.width) x \(picture.height)"
         
         let screenWidth = UIScreen.main.bounds.width
         let verticalRatio: CGFloat = CGFloat(picture.height) / CGFloat(picture.width)
+        
         detailPictureImageView.snp.updateConstraints {
             $0.height.equalTo(screenWidth * verticalRatio)
         }
+        
+        guard let date = serverDateFormatter.date(from: picture.createdAt) else {
+            pictureDateLabel.text = StringLiterals.DetailPicture.noInformation
+            return
+        }
+        
+        pictureDateLabel.text = dateFormatter.string(from: date)
     }
     
     func configureView(detailPicture: DetailPicture) {
