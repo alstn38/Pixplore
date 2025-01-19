@@ -97,6 +97,7 @@ final class SearchViewController: UIViewController {
     
     private func fetchSearchedPicture(_ value: SearchPicture) {
         if currentPage == 1 {
+            scrollToTop()
             totalPage = value.totalPages
             searchPictureArray = value.results
         } else {
@@ -104,9 +105,24 @@ final class SearchViewController: UIViewController {
         }
     }
     
+    private func scrollToTop() {
+        if !searchPictureArray.isEmpty {
+            searchView.pictureCollectionView.scrollToItem(at: IndexPath(item: 0, section: 0), at: .top, animated: false)
+        }
+    }
+    
     @objc private func sortingButtonDidTap(_ sender: UIButton) {
+        sender.isEnabled = false
+        
         sortingType.toggle()
         searchView.configureSortingButton(sortingType)
+        guard let recentSearchedText else { return }
+        currentPage = 1
+        getSearchedPicture(query: recentSearchedText)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            sender.isEnabled = true
+        }
     }
 }
 
@@ -117,6 +133,11 @@ extension SearchViewController: UISearchBarDelegate {
         guard let searchedText = searchBar.text,
             !searchedText.isEmpty
         else { return }
+        
+        guard searchedText != recentSearchedText else {
+            scrollToTop()
+            return
+        }
         
         currentPage = 1
         recentSearchedText = searchedText
