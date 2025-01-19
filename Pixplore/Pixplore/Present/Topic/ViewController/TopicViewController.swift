@@ -10,8 +10,8 @@ import UIKit
 final class TopicViewController: UIViewController {
     
     private let topicView = TopicView()
-    private var selectedTopic: [TopicView.TopicPictureType] = [.goldenHour, .business, .architecture]
-    private var topicPictureDictionary: [TopicView.TopicPictureType: [Picture]] = [:]
+    private var selectedTopic: [TopicPictureType] = []
+    private var topicPictureDictionary: [TopicPictureType: [Picture]] = [:]
     
     override func loadView() {
         view = topicView
@@ -53,7 +53,7 @@ final class TopicViewController: UIViewController {
         )
     }
     
-    private func getTopicPicture(topic: TopicView.TopicPictureType) {
+    private func getTopicPicture(topic: TopicPictureType) {
         let endPoint = TopicEndPoint.searchPicture(topicID: topic.topicID)
         
         NetworkService.shared.request(endPoint: endPoint, responseType: [Picture].self) { [weak self] response in
@@ -69,6 +69,8 @@ final class TopicViewController: UIViewController {
     }
     
     private func fetchTopicPicture() {
+        selectedTopic = Array(TopicPictureType.allCases.shuffled().prefix(3))
+        
         selectedTopic.forEach { topic in
             getTopicPicture(topic: topic)
         }
