@@ -5,6 +5,7 @@
 //  Created by 강민수 on 1/18/25.
 //
 
+import Kingfisher
 import SnapKit
 import UIKit
 
@@ -19,9 +20,8 @@ final class DetailPictureView: UIView {
     
     private let contentView = UIView()
     
-    private let userProfileImage: UIImageView = {
+    private let userProfileImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.backgroundColor = .gray
         imageView.contentMode = .scaleToFill
         imageView.layer.cornerRadius = 25
         imageView.clipsToBounds = true
@@ -30,7 +30,6 @@ final class DetailPictureView: UIView {
     
     private let userNameLabel: UILabel = {
         let label = UILabel()
-        label.text = "Brayden Prato" //TODO: 이후 삭제
         label.font = .systemFont(ofSize: 12, weight: .medium)
         label.numberOfLines = 1
         return label
@@ -38,13 +37,12 @@ final class DetailPictureView: UIView {
     
     private let pictureDateLabel: UILabel = {
         let label = UILabel()
-        label.text = "2024년 7월 3일 게시됨" //TODO: 이후 삭제
         label.font = .systemFont(ofSize: 11, weight: .bold)
         label.numberOfLines = 1
         return label
     }()
     
-    private let detailPicture: UIImageView = {
+    private let detailPictureImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = .gray
         imageView.contentMode = .scaleToFill
@@ -85,7 +83,6 @@ final class DetailPictureView: UIView {
     
     private let sizeLabel: UILabel = {
         let label = UILabel()
-        label.text = "3098 x 3872" //TODO: 이후 삭제
         label.textColor = .darkGray
         label.font = .systemFont(ofSize: 13, weight: .bold)
         label.numberOfLines = 1
@@ -94,7 +91,6 @@ final class DetailPictureView: UIView {
     
     private let viewsCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "1,548,623" //TODO: 이후 삭제
         label.textColor = .darkGray
         label.font = .systemFont(ofSize: 13, weight: .bold)
         label.numberOfLines = 1
@@ -103,7 +99,6 @@ final class DetailPictureView: UIView {
     
     private let downloadLabel: UILabel = {
         let label = UILabel()
-        label.text = "548,623" //TODO: 이후 삭제
         label.textColor = .darkGray
         label.font = .systemFont(ofSize: 13, weight: .bold)
         label.numberOfLines = 1
@@ -122,6 +117,27 @@ final class DetailPictureView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+  
+    func configureView(picture: Picture) {
+        let profileURL = URL(string: picture.user.profileImage.mediumSizeLink)
+        let detailImageURL = URL(string: picture.urls.originalLink)
+        userProfileImageView.kf.setImage(with: profileURL)
+        detailPictureImageView.kf.setImage(with: detailImageURL)
+        userNameLabel.text = picture.user.name
+        pictureDateLabel.text = picture.createdAt
+        sizeLabel.text = "\(picture.width) x \(picture.height)"
+        
+        let screenWidth = UIScreen.main.bounds.width
+        let verticalRatio: CGFloat = CGFloat(picture.height) / CGFloat(picture.width)
+        detailPictureImageView.snp.updateConstraints {
+            $0.height.equalTo(screenWidth * verticalRatio)
+        }
+    }
+    
+    func configureView(detailPicture: DetailPicture) {
+        viewsCountLabel.text = detailPicture.views.total.formatted()
+        downloadLabel.text = detailPicture.downloads.total.formatted()
+    }
     
     private func configureView() {
         backgroundColor = .white
@@ -131,10 +147,10 @@ final class DetailPictureView: UIView {
         addSubview(detailScrollView)
         detailScrollView.addSubview(contentView)
         contentView.addSubviews(
-            userProfileImage,
+            userProfileImageView,
             userNameLabel,
             pictureDateLabel,
-            detailPicture,
+            detailPictureImageView,
             infoTitleLabel,
             sizeTitleLabel,
             viewsCountTitleLabel,
@@ -155,29 +171,29 @@ final class DetailPictureView: UIView {
             $0.width.equalTo(detailScrollView)
         }
         
-        userProfileImage.snp.makeConstraints {
+        userProfileImageView.snp.makeConstraints {
             $0.top.leading.equalTo(detailScrollView).inset(20)
             $0.size.equalTo(50)
         }
         
         userNameLabel.snp.makeConstraints {
-            $0.top.equalTo(userProfileImage).offset(8)
-            $0.leading.equalTo(userProfileImage.snp.trailing).offset(15)
+            $0.top.equalTo(userProfileImageView).offset(8)
+            $0.leading.equalTo(userProfileImageView.snp.trailing).offset(15)
         }
         
         pictureDateLabel.snp.makeConstraints {
             $0.top.equalTo(userNameLabel.snp.bottom).offset(3)
-            $0.leading.equalTo(userProfileImage.snp.trailing).offset(15)
+            $0.leading.equalTo(userProfileImageView.snp.trailing).offset(15)
         }
         
-        detailPicture.snp.makeConstraints {
-            $0.top.equalTo(userProfileImage.snp.bottom).offset(15)
+        detailPictureImageView.snp.makeConstraints {
+            $0.top.equalTo(userProfileImageView.snp.bottom).offset(15)
             $0.horizontalEdges.equalToSuperview()
-            $0.height.equalTo(750)
+            $0.height.equalTo(300)
         }
         
         infoTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(detailPicture.snp.bottom).offset(20)
+            $0.top.equalTo(detailPictureImageView.snp.bottom).offset(20)
             $0.leading.equalToSuperview().offset(20)
         }
         
@@ -209,7 +225,7 @@ final class DetailPictureView: UIView {
         downloadLabel.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
             $0.centerY.equalTo(downloadTitleLabel)
-            $0.bottom.equalToSuperview().inset(50) // content 크기를 지정하기 위해 설정
+            $0.bottom.equalToSuperview().inset(50)
         }
     }
 }
