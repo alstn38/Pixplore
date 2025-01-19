@@ -29,6 +29,7 @@ enum StringLiterals {
         static let downloadTitle: String = "다운로드"
         static let chartTitle: String = "차트"
         static let viewTitle: String = "조회"
+        static let noInformation: String = "정보없음"
     }
     
     enum Alert {
