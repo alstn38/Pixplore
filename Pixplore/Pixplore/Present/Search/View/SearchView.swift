@@ -176,7 +176,7 @@ extension SearchView {
             case .searchGuide:
                 return StringLiterals.Search.searchGuideText
             case .noResult:
-                return StringLiterals.Search.searchGuideText
+                return StringLiterals.Search.searchNoResult
             case .hidden:
                 return ""
             }
