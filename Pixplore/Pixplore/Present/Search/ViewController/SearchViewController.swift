@@ -65,6 +65,7 @@ final class SearchViewController: UIViewController {
         
         searchView.pictureCollectionView.delegate = self
         searchView.pictureCollectionView.dataSource = self
+        searchView.pictureCollectionView.prefetchDataSource = self
         searchView.pictureCollectionView.register(
             SearchPictureCollectionViewCell.self,
             forCellWithReuseIdentifier: SearchPictureCollectionViewCell.identifier
@@ -87,11 +88,19 @@ final class SearchViewController: UIViewController {
             guard let self else { return }
             switch response {
             case .success(let value):
-                self.totalPage = value.totalPages
-                searchPictureArray = value.results
+                self.fetchSearchedPicture(value)
             case .failure(let error):
                 self.presentWarningAlert(message: error.description)
             }
+        }
+    }
+    
+    private func fetchSearchedPicture(_ value: SearchPicture) {
+        if currentPage == 1 {
+            totalPage = value.totalPages
+            searchPictureArray = value.results
+        } else {
+            searchPictureArray.append(contentsOf: value.results)
         }
     }
     
@@ -105,12 +114,11 @@ final class SearchViewController: UIViewController {
 extension SearchViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        guard let searchedText = searchBar.text else { return }
-        guard
-            !searchedText.isEmpty,
-            recentSearchedText != searchedText
+        guard let searchedText = searchBar.text,
+            !searchedText.isEmpty
         else { return }
         
+        currentPage = 1
         recentSearchedText = searchedText
         getSearchedPicture(query: searchedText)
     }
@@ -167,6 +175,11 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
             
             guard let cell = collectionView.cellForItem(at: indexPath) as? ColorCollectionViewCell else { return }
             cell.configureCell(isSelected: !isSameFilter)
+            
+            guard let recentSearchedText else { return }
+            currentPage = 1
+            getSearchedPicture(query: recentSearchedText)
+            
         case searchView.pictureCollectionView:
             print(#function)
         default:
@@ -184,5 +197,21 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         default:
             return
         }
+    }
+}
+
+// MARK: - UICollectionViewDataSourcePrefetching
+extension SearchViewController: UICollectionViewDataSourcePrefetching {
+    
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        guard
+            let recentSearchedText = recentSearchedText,
+            collectionView == searchView.pictureCollectionView,
+            indexPaths.map({ $0.item }).contains(searchPictureArray.count - 2),
+            currentPage < totalPage
+        else { return }
+        
+        currentPage += 1
+        getSearchedPicture(query: recentSearchedText)
     }
 }
