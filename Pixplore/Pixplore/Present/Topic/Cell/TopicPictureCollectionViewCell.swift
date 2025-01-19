@@ -5,6 +5,7 @@
 //  Created by 강민수 on 1/18/25.
 //
 
+import Kingfisher
 import SnapKit
 import UIKit
 
@@ -12,9 +13,8 @@ final class TopicPictureCollectionViewCell: UICollectionViewCell {
     
     private let topicPictureImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleToFill
+        imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 20
-        imageView.backgroundColor = .gray // TODO: 이후 삭제
         imageView.clipsToBounds = true
         return imageView
     }()
@@ -36,7 +36,6 @@ final class TopicPictureCollectionViewCell: UICollectionViewCell {
     
     private let starCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "1,543" // TODO: 서버 통신 이후 삭제
         label.textColor = .white
         label.numberOfLines = 1
         label.font = .systemFont(ofSize: 10, weight: .medium)
@@ -55,8 +54,10 @@ final class TopicPictureCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configureCell() {
-        
+    func configureCell(_ picture: Picture) {
+        let url = URL(string: picture.urls.smallSizeLink)
+        topicPictureImageView.kf.setImage(with: url)
+        starCountLabel.text = picture.likes.formatted()
     }
     
     private func configureHierarchy() {
