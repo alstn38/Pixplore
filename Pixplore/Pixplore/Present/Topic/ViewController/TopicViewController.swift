@@ -12,6 +12,8 @@ final class TopicViewController: UIViewController {
     private let topicView = TopicView()
     private var selectedTopic: [TopicPictureType] = []
     private var topicPictureDictionary: [TopicPictureType: [Picture]] = [:]
+    private let refreshControl = UIRefreshControl()
+    private var isRecentlyRefreshed: Bool = false
     
     override func loadView() {
         view = topicView
@@ -20,23 +22,19 @@ final class TopicViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        configureNavigation()
         configureDelegate()
         fetchTopicPicture()
+        configureRefreshControl()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.navigationBar.prefersLargeTitles = false
-    }
-    
-    private func configureNavigation() {
-        navigationItem.title = StringLiterals.Topic.title
+        navigationController?.setNavigationBarHidden(false, animated: false)
     }
     
     private func configureDelegate() {
@@ -53,11 +51,17 @@ final class TopicViewController: UIViewController {
         )
     }
     
+    private func configureRefreshControl() {
+        topicView.topicPictureCollectionView.refreshControl = refreshControl
+        refreshControl.addTarget(self, action: #selector(refreshControlDidChanged), for: .valueChanged)
+    }
+    
     private func getTopicPicture(topic: TopicPictureType) {
         let endPoint = TopicEndPoint.searchPicture(topicID: topic.topicID)
         
         NetworkService.shared.request(endPoint: endPoint, responseType: [Picture].self) { [weak self] response in
             guard let self else { return }
+            self.refreshControl.endRefreshing()
             switch response {
             case .success(let value):
                 self.topicPictureDictionary[topic] = value
@@ -69,10 +73,30 @@ final class TopicViewController: UIViewController {
     }
     
     private func fetchTopicPicture() {
+        recentlyRefreshCheck()
         selectedTopic = Array(TopicPictureType.allCases.shuffled().prefix(3))
+        topicPictureDictionary.removeAll()
         
         selectedTopic.forEach { topic in
             getTopicPicture(topic: topic)
+        }
+    }
+    
+    @objc private func refreshControlDidChanged(_ sender: UIRefreshControl) {
+        switch isRecentlyRefreshed {
+        case true:
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.refreshControl.endRefreshing()
+            }
+        case false:
+            isRecentlyRefreshed = true
+            fetchTopicPicture()
+        }
+    }
+    
+    private func recentlyRefreshCheck() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 60) {
+            self.isRecentlyRefreshed = false
         }
     }
 }
