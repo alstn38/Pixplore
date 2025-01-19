@@ -201,7 +201,10 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
             getSearchedPicture(query: recentSearchedText)
             
         case searchView.pictureCollectionView:
-            print(#function)
+            let picture = searchPictureArray[indexPath.item]
+            let detailPictureViewController = DetailPictureViewController(picture: picture)
+            navigationController?.pushViewController(detailPictureViewController, animated: true)
+            
         default:
             return
         }
