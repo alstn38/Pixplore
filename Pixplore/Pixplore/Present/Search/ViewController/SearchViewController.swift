@@ -113,16 +113,15 @@ final class SearchViewController: UIViewController {
     
     @objc private func sortingButtonDidTap(_ sender: UIButton) {
         sender.isEnabled = false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            sender.isEnabled = true
+        }
         
         sortingType.toggle()
         searchView.configureSortingButton(sortingType)
         guard let recentSearchedText else { return }
         currentPage = 1
         getSearchedPicture(query: recentSearchedText)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            sender.isEnabled = true
-        }
     }
 }
 
