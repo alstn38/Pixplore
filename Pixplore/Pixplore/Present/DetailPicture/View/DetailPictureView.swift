@@ -5,6 +5,7 @@
 //  Created by 강민수 on 1/18/25.
 //
 
+import DGCharts
 import Kingfisher
 import SnapKit
 import UIKit
@@ -105,6 +106,37 @@ final class DetailPictureView: UIView {
         return label
     }()
     
+    private let chartTitleLabel: UILabel = {
+        let label = UILabel()
+        label.text = StringLiterals.DetailPicture.chartTitle
+        label.font = .systemFont(ofSize: 16, weight: .bold)
+        label.numberOfLines = 1
+        return label
+    }()
+    
+    let chartSegmentedControl: UISegmentedControl = {
+        let segmentedControl = UISegmentedControl(items: [StringLiterals.DetailPicture.viewTitle, StringLiterals.DetailPicture.downloadTitle])
+        segmentedControl.selectedSegmentIndex = 0
+        segmentedControl.selectedSegmentTintColor = .white
+        segmentedControl.tintColor = .black
+        return segmentedControl
+    }()
+    
+    private let lineChartView: LineChartView = {
+        let chartView = LineChartView()
+        chartView.xAxis.labelPosition = .bottom
+        chartView.chartDescription.enabled = false
+        chartView.leftAxis.axisMinimum = 0
+        chartView.rightAxis.enabled = false
+        chartView.leftAxis.enabled = false
+        chartView.leftAxis.drawGridLinesEnabled = false
+        chartView.xAxis.drawGridLinesEnabled = false
+        chartView.legend.enabled = false
+        chartView.xAxis.enabled = false
+        chartView.isUserInteractionEnabled = false
+        return chartView
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -137,6 +169,44 @@ final class DetailPictureView: UIView {
     func configureView(detailPicture: DetailPicture) {
         viewsCountLabel.text = detailPicture.views.total.formatted()
         downloadLabel.text = detailPicture.downloads.total.formatted()
+        
+        var chartDataEntry: [ChartDataEntry] = []
+        let chartData = chartSegmentedControl.selectedSegmentIndex == 0
+        ? detailPicture.views.historical.statistic
+        : detailPicture.downloads.historical.statistic
+        
+        for (index, value) in chartData.enumerated() {
+            let dataEntry = ChartDataEntry(x: Double(index), y: Double(value.views))
+            chartDataEntry.append(dataEntry)
+        }
+        
+        makeLineChart(chartDataEntry)
+    }
+    
+    private func makeLineChart(_ chartDataEntry: [ChartDataEntry]) {
+        let lineChartDataSet = LineChartDataSet(entries: chartDataEntry)
+        lineChartDataSet.mode = .cubicBezier
+        lineChartDataSet.lineWidth = 1
+        lineChartDataSet.setColor(.blue)
+        lineChartDataSet.circleRadius = 4
+        lineChartDataSet.drawCircleHoleEnabled = false
+        lineChartDataSet.drawCirclesEnabled = false
+        lineChartDataSet.drawValuesEnabled = false
+        
+        let gradientColors = [UIColor.blue.cgColor, UIColor.white.cgColor]
+        guard let gradient = CGGradient(
+            colorsSpace: nil,
+            colors: gradientColors as CFArray,
+            locations: [0.0, 1.0]
+        ) else { return }
+        
+        lineChartDataSet.fill = LinearGradientFill(gradient: gradient, angle: 270)
+        lineChartDataSet.drawFilledEnabled = true
+        
+        let lineChartData = LineChartData(dataSet: lineChartDataSet)
+        lineChartView.data = lineChartData
+        
+        lineChartData.notifyDataChanged()
     }
     
     private func configureView() {
@@ -157,7 +227,10 @@ final class DetailPictureView: UIView {
             downloadTitleLabel,
             sizeLabel,
             viewsCountLabel,
-            downloadLabel
+            downloadLabel,
+            chartTitleLabel,
+            chartSegmentedControl,
+            lineChartView
         )
     }
     
@@ -225,6 +298,25 @@ final class DetailPictureView: UIView {
         downloadLabel.snp.makeConstraints {
             $0.trailing.equalToSuperview().inset(20)
             $0.centerY.equalTo(downloadTitleLabel)
+        }
+        
+        chartTitleLabel.snp.makeConstraints {
+            $0.top.equalTo(downloadTitleLabel.snp.bottom).offset(30)
+            $0.leading.equalToSuperview().offset(20)
+        }
+        
+        chartSegmentedControl.snp.makeConstraints {
+            $0.leading.equalTo(downloadTitleLabel)
+            $0.centerY.equalTo(chartTitleLabel)
+            $0.width.equalTo(130)
+            $0.height.equalTo(26)
+        }
+        
+        lineChartView.snp.makeConstraints {
+            $0.top.equalTo(chartSegmentedControl.snp.bottom).offset(10)
+            $0.height.equalTo(200)
+            $0.leading.equalTo(chartSegmentedControl)
+            $0.trailing.equalToSuperview()
             $0.bottom.equalToSuperview().inset(50)
         }
     }
