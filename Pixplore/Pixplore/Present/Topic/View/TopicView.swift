@@ -10,6 +10,20 @@ import UIKit
 
 final class TopicView: UIView {
     
+    private let titleBackground: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        return view
+    }()
+    
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = StringLiterals.Topic.title
+        label.numberOfLines = 1
+        label.font = .systemFont(ofSize: 34, weight: .bold)
+        return label
+    }()
+    
     let topicPictureCollectionView: UICollectionView = {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1),
@@ -70,12 +84,27 @@ final class TopicView: UIView {
     }
     
     private func configureHierarchy() {
-        addSubviews(topicPictureCollectionView)
+        addSubviews(
+            titleBackground,
+            titleLabel,
+            topicPictureCollectionView
+        )
     }
     
     private func configureLayout() {
+        titleBackground.snp.makeConstraints {
+            $0.top.horizontalEdges.equalTo(safeAreaLayoutGuide)
+            $0.height.equalTo(80)
+        }
+        
+        titleLabel.snp.makeConstraints {
+            $0.centerY.equalTo(titleBackground)
+            $0.leading.equalTo(20)
+        }
+        
         topicPictureCollectionView.snp.makeConstraints {
-            $0.edges.equalTo(safeAreaLayoutGuide)
+            $0.top.equalTo(titleBackground.snp.bottom)
+            $0.horizontalEdges.bottom.equalTo(safeAreaLayoutGuide)
         }
     }
 }
