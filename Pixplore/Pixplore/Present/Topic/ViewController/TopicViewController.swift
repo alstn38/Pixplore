@@ -10,11 +10,8 @@ import UIKit
 final class TopicViewController: UIViewController {
     
     private let topicView = TopicView()
-    private var topicPictureArray: [TopicView.TopicSection] = [
-        .goldenHour([dummyTopicPictures, dummyTopicPictures, dummyTopicPictures]),
-        .business([dummyTopicPictures, dummyTopicPictures, dummyTopicPictures, dummyTopicPictures, dummyTopicPictures, dummyTopicPictures]),
-        .architecture([dummyTopicPictures, dummyTopicPictures, dummyTopicPictures, dummyTopicPictures, dummyTopicPictures])
-    ]
+    private var selectedTopic: [TopicView.TopicPictureType] = [.goldenHour, .business, .architecture]
+    private var topicPictureDictionary: [TopicView.TopicPictureType: [Picture]] = [:]
     
     override func loadView() {
         view = topicView
@@ -25,6 +22,7 @@ final class TopicViewController: UIViewController {
         
         configureNavigation()
         configureDelegate()
+        fetchTopicPicture()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -54,13 +52,34 @@ final class TopicViewController: UIViewController {
             withReuseIdentifier: TopicPictureHeaderView.identifier
         )
     }
+    
+    private func getTopicPicture(topic: TopicView.TopicPictureType) {
+        let endPoint = TopicEndPoint.searchPicture(topicID: topic.topicID)
+        
+        NetworkService.shared.request(endPoint: endPoint, responseType: [Picture].self) { [weak self] response in
+            guard let self else { return }
+            switch response {
+            case .success(let value):
+                self.topicPictureDictionary[topic] = value
+                self.topicView.topicPictureCollectionView.reloadData()
+            case .failure(let error):
+                self.presentWarningAlert(message: error.description)
+            }
+        }
+    }
+    
+    private func fetchTopicPicture() {
+        selectedTopic.forEach { topic in
+            getTopicPicture(topic: topic)
+        }
+    }
 }
 
 // MARK: - UICollectionViewDelegate, UICollectionViewDataSource
 extension TopicViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return topicPictureArray.count
+        return topicPictureDictionary.keys.count
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -71,22 +90,21 @@ extension TopicViewController: UICollectionViewDelegate, UICollectionViewDataSou
                 withReuseIdentifier: TopicPictureHeaderView.identifier,
                 for: indexPath
             ) as? TopicPictureHeaderView else { return UICollectionReusableView() }
-            header.configureView(sectionTitle: topicPictureArray[indexPath.section].sectionHeaderTitle)
+            
+            let topic = selectedTopic[indexPath.section]
+            header.configureView(sectionTitle: topic.sectionHeaderTitle)
+            
             return header
+            
         default:
             return UICollectionReusableView()
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        switch topicPictureArray[section] {
-        case let .goldenHour(items):
-            return items.count
-        case let .business(items):
-            return items.count
-        case let .architecture(items):
-            return items.count
-        }
+        let topic = selectedTopic[section]
+        guard let topicPictureCount = topicPictureDictionary[topic]?.count else { return 0 }
+        return topicPictureCount
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -95,14 +113,10 @@ extension TopicViewController: UICollectionViewDelegate, UICollectionViewDataSou
             for: indexPath
         ) as? TopicPictureCollectionViewCell else { return UICollectionViewCell() }
         
-        switch topicPictureArray[indexPath.section] {
-        case let .goldenHour(items):
-            print("")
-        case let .business(items):
-            print("")
-        case let .architecture(items):
-            print("")
-        }
+        let topic = selectedTopic[indexPath.section]
+        guard let topicPictureArray = topicPictureDictionary[topic] else { return UICollectionViewCell() }
+        
+        cell.configureCell(topicPictureArray[indexPath.row])
         
         return cell
     }
