@@ -79,36 +79,3 @@ final class TopicView: UIView {
         }
     }
 }
-
-// MARK: - CollectionView Section
-extension TopicView {
-    
-    enum TopicPictureType: CaseIterable {
-        
-        case goldenHour
-        case business
-        case architecture
-        
-        var sectionHeaderTitle: String {
-            switch self {
-            case .goldenHour:
-                return "골든 아워"
-            case .business:
-                return "비즈니스 및 업무"
-            case .architecture:
-                return "건축 및 인테리어"
-            }
-        }
-        
-        var topicID: String {
-            switch self {
-            case .goldenHour:
-                return "golden-hour"
-            case .business:
-                return "business-work"
-            case .architecture:
-                return "architecture-interior"
-            }
-        }
-    }
-}
