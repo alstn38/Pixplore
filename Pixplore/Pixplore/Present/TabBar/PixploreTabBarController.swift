@@ -53,7 +53,9 @@ final class PixploreTabBarController: UITabBarController {
         appearance.configureWithDefaultBackground()
         appearance.titleTextAttributes = [.foregroundColor: UIColor.black]
         appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.black]
+        
         navigationController.navigationBar.standardAppearance = appearance
         navigationController.navigationBar.scrollEdgeAppearance = appearance
+        navigationController.navigationBar.tintColor = .black
     }
 }
