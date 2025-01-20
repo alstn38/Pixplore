@@ -159,15 +159,17 @@ final class DetailPictureView: UIView {
     }
   
     func configureView(picture: Picture) {
+        let screenWidth = UIScreen.main.bounds.width
+        let verticalRatio: CGFloat = CGFloat(picture.height) / CGFloat(picture.width)
         let profileURL = URL(string: picture.user.profileImage.mediumSizeLink)
         let detailImageURL = URL(string: picture.urls.originalLink)
         userProfileImageView.kf.setImage(with: profileURL)
-        detailPictureImageView.kf.setImage(with: detailImageURL)
+        detailPictureImageView.kf.setImage(with: detailImageURL) { [weak self] _ in
+            self?.detailPictureImageView.image = self?.detailPictureImageView.image?.resize(newWidth: screenWidth)
+        }
+        
         userNameLabel.text = picture.user.name
         sizeLabel.text = "\(picture.width) x \(picture.height)"
-        
-        let screenWidth = UIScreen.main.bounds.width
-        let verticalRatio: CGFloat = CGFloat(picture.height) / CGFloat(picture.width)
         
         detailPictureImageView.snp.updateConstraints {
             $0.height.equalTo(screenWidth * verticalRatio)
