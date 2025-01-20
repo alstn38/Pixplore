@@ -56,16 +56,15 @@ final class TopicViewController: UIViewController {
         refreshControl.addTarget(self, action: #selector(refreshControlDidChanged), for: .valueChanged)
     }
     
-    private func getTopicPicture(topic: TopicPictureType) {
+    private func getTopicPicture(topic: TopicPictureType, dispatchGroup: DispatchGroup) {
         let endPoint = TopicEndPoint.searchPicture(topicID: topic.topicID)
         
         NetworkService.shared.request(endPoint: endPoint, responseType: [Picture].self) { [weak self] response in
             guard let self else { return }
-            self.refreshControl.endRefreshing()
+            dispatchGroup.leave()
             switch response {
             case .success(let value):
                 self.topicPictureDictionary[topic] = value
-                self.topicView.topicPictureCollectionView.reloadData()
             case .failure(let error):
                 self.presentWarningAlert(message: error.description)
             }
@@ -77,8 +76,15 @@ final class TopicViewController: UIViewController {
         selectedTopic = Array(TopicPictureType.allCases.shuffled().prefix(3))
         topicPictureDictionary.removeAll()
         
+        let dispatchGroup = DispatchGroup()
         selectedTopic.forEach { topic in
-            getTopicPicture(topic: topic)
+            dispatchGroup.enter()
+            getTopicPicture(topic: topic, dispatchGroup: dispatchGroup)
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            self.refreshControl.endRefreshing()
+            self.topicView.topicPictureCollectionView.reloadData()
         }
     }
     
