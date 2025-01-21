@@ -39,11 +39,13 @@ final class PixploreTabBarController: UITabBarController {
         )
         
         let topicNavigationController = UINavigationController(rootViewController: topicViewController)
+        let shortsNavigationController = UINavigationController(rootViewController: shortsViewController)
         let searchNavigationController = UINavigationController(rootViewController: searchViewController)
         configureNavigationAppearance(topicNavigationController)
+        configureNavigationAppearance(shortsNavigationController)
         configureNavigationAppearance(searchNavigationController)
         setViewControllers(
-            [topicNavigationController, shortsViewController, searchNavigationController],
+            [topicNavigationController, shortsNavigationController, searchNavigationController],
             animated: true
         )
     }
