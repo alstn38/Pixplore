@@ -5,6 +5,7 @@
 //  Created by 강민수 on 1/21/25.
 //
 
+import Kingfisher
 import SnapKit
 import UIKit
 
@@ -27,7 +28,6 @@ final class ShortsCollectionViewCell: UICollectionViewCell {
     private let userNameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 12, weight: .medium)
-        label.text = "강민수" // TODO: 이후 삭제
         label.textColor = .white
         label.numberOfLines = 1
         return label
@@ -36,7 +36,6 @@ final class ShortsCollectionViewCell: UICollectionViewCell {
     private let pictureDateLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 11, weight: .bold)
-        label.text = "2021년 5월 4일 게시됨" // TODO: 이후 삭제
         label.textColor = .white
         label.numberOfLines = 1
         return label
@@ -52,6 +51,17 @@ final class ShortsCollectionViewCell: UICollectionViewCell {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func configureCell(_ picture: Picture) {
+        userNameLabel.text = picture.user.name
+        pictureDateLabel.text = picture.createdAt
+        
+        let userProfileURL = URL(string: picture.user.profileImage.mediumSizeLink)
+        userProfileImageView.kf.setImage(with: userProfileURL)
+        
+        let shortsImageURL = URL(string: picture.urls.originalLink)
+        shortsImageView.kf.setImage(with: shortsImageURL) // TODO: 이미지 resize
     }
     
     private func configureHierarchy() {
