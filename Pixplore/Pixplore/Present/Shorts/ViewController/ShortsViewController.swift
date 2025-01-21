@@ -10,6 +10,11 @@ import UIKit
 final class ShortsViewController: UIViewController {
     
     private let shortsView = ShortsView()
+    private var shortsPictureArray: [Picture] = [] {
+        didSet {
+            shortsView.shortsCollectionView.reloadData()
+        }
+    }
     
     override func loadView() {
         view = shortsView
@@ -19,6 +24,7 @@ final class ShortsViewController: UIViewController {
         super.viewDidLoad()
         
         configureCollectionView()
+        getShortsPicture()
     }
     
     private func configureCollectionView() {
@@ -29,13 +35,27 @@ final class ShortsViewController: UIViewController {
             forCellWithReuseIdentifier: ShortsCollectionViewCell.identifier
         )
     }
+    
+    private func getShortsPicture() {
+        let endPoint = PictureEndPoint.randomPicture
+        
+        NetworkService.shared.request(endPoint: endPoint, responseType: [Picture].self) { [weak self] response in
+            guard let self else { return }
+            switch response {
+            case .success(let value):
+                self.shortsPictureArray.append(contentsOf: value)
+            case .failure(let error):
+                self.presentWarningAlert(message: error.description)
+            }
+        }
+    }
 }
 
 // MARK: - UICollectionViewDelegate, UICollectionViewDataSource
 extension ShortsViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return shortsPictureArray.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -43,6 +63,8 @@ extension ShortsViewController: UICollectionViewDelegate, UICollectionViewDataSo
             withReuseIdentifier: ShortsCollectionViewCell.identifier,
             for: indexPath
         ) as? ShortsCollectionViewCell else { return UICollectionViewCell() }
+        
+        cell.configureCell(shortsPictureArray[indexPath.item])
         
         return cell
     }
