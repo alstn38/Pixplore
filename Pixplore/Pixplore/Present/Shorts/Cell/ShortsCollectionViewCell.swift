@@ -62,7 +62,9 @@ final class ShortsCollectionViewCell: UICollectionViewCell {
     func configureCell(_ picture: Picture) {
         activityIndicatorView.startAnimating()
         userNameLabel.text = picture.user.name
-        pictureDateLabel.text = picture.createdAt
+        
+        let publishedDate = DateFormatterManager.shared.getPublishedDateString(from: picture.createdAt)
+        pictureDateLabel.text = publishedDate
         
         let userProfileURL = URL(string: picture.user.profileImage.mediumSizeLink)
         userProfileImageView.kf.setImage(with: userProfileURL)
