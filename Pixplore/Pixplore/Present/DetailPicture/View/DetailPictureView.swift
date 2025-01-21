@@ -156,16 +156,21 @@ final class DetailPictureView: UIView {
         let profileURL = URL(string: picture.user.profileImage.mediumSizeLink)
         let detailImageURL = URL(string: picture.urls.originalLink)
         userProfileImageView.kf.setImage(with: profileURL)
-        detailPictureImageView.kf.setImage(with: detailImageURL) { [weak self] _ in
-            self?.detailPictureImageView.image = self?.detailPictureImageView.image?.resize(newWidth: screenWidth)
-        }
-        
         userNameLabel.text = picture.user.name
         sizeLabel.text = "\(picture.width) x \(picture.height)"
         
         detailPictureImageView.snp.updateConstraints {
             $0.height.equalTo(screenWidth * verticalRatio)
         }
+        
+        detailPictureImageView.kf.setImage(
+            with: detailImageURL,
+            options: [
+                .processor(DownsamplingImageProcessor(size: CGSize(width: screenWidth, height: screenWidth * verticalRatio))),
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage
+            ]
+        )
         
         let publishedDate = DateFormatterManager.shared.getPublishedDateString(from: picture.createdAt)
         pictureDateLabel.text = publishedDate
