@@ -19,23 +19,35 @@ final class PixploreTabBarController: UITabBarController {
     private func configureTabBarController() {
         let topicViewController = TopicViewController()
         topicViewController.tabBarItem = UITabBarItem(
-            title: "토픽",
+            title: "Topic",
             image: UIImage(systemName: "chart.line.uptrend.xyaxis"),
             selectedImage: UIImage(systemName: "chart.line.uptrend.xyaxis")
         )
         
+        let shortsViewController = ShortsViewController()
+        shortsViewController.tabBarItem = UITabBarItem(
+            title: "Shorts",
+            image: UIImage(systemName: "play.square.stack"),
+            selectedImage: UIImage(systemName: "play.square.stack")
+        )
+        
         let searchViewController = SearchViewController()
         searchViewController.tabBarItem = UITabBarItem(
-            title: "검색",
+            title: "Search",
             image: UIImage(systemName: "magnifyingglass"),
             selectedImage: UIImage(systemName: "magnifyingglass")
         )
         
         let topicNavigationController = UINavigationController(rootViewController: topicViewController)
+        let shortsNavigationController = UINavigationController(rootViewController: shortsViewController)
         let searchNavigationController = UINavigationController(rootViewController: searchViewController)
         configureNavigationAppearance(topicNavigationController)
+        configureNavigationAppearance(shortsNavigationController)
         configureNavigationAppearance(searchNavigationController)
-        setViewControllers([topicNavigationController, searchNavigationController], animated: true)
+        setViewControllers(
+            [topicNavigationController, shortsNavigationController, searchNavigationController],
+            animated: true
+        )
     }
     
     private func configureTabBarAppearance() {
