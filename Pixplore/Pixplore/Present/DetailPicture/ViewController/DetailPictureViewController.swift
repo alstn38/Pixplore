@@ -40,7 +40,7 @@ final class DetailPictureViewController: UIViewController {
     }
     
     private func getDetailPicture(imageID: String) {
-        let endPoint = DetailPictureEndPoint.detailPicture(imageID: imageID)
+        let endPoint = PictureEndPoint.detailPicture(imageID: imageID)
         
         NetworkService.shared.request(endPoint: endPoint, responseType: DetailPicture.self) { [weak self] response in
             guard let self else { return }

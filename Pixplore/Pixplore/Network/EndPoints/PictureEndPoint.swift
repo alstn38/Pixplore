@@ -1,5 +1,5 @@
 //
-//  DetailPictureEndPoint.swift
+//  PictureEndPoint.swift
 //  Pixplore
 //
 //  Created by 강민수 on 1/19/25.
@@ -8,11 +8,11 @@
 import Alamofire
 import Foundation
 
-enum DetailPictureEndPoint: EndPointProtocol {
+enum PictureEndPoint: EndPointProtocol {
     case detailPicture(imageID: String)
 }
 
-extension DetailPictureEndPoint {
+extension PictureEndPoint {
     
     var url: URL? {
         return URL(string: baseURL + path)
