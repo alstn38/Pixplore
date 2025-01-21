@@ -27,6 +27,16 @@ final class ShortsViewController: UIViewController {
         getShortsPicture()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.isHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.navigationBar.isHidden = false
+    }
+    
     private func configureCollectionView() {
         shortsView.shortsCollectionView.delegate = self
         shortsView.shortsCollectionView.dataSource = self
@@ -67,6 +77,12 @@ extension ShortsViewController: UICollectionViewDelegate, UICollectionViewDataSo
         cell.configureCell(shortsPictureArray[indexPath.item])
         
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let picture = shortsPictureArray[indexPath.item]
+        let detailPictureViewController = DetailPictureViewController(picture: picture)
+        navigationController?.pushViewController(detailPictureViewController, animated: true)
     }
 }
 
