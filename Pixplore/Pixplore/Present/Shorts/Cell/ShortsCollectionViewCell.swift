@@ -70,9 +70,16 @@ final class ShortsCollectionViewCell: UICollectionViewCell {
         userProfileImageView.kf.setImage(with: userProfileURL)
         
         let screenWidth = UIScreen.main.bounds.width
+        let screenHeight = UIScreen.main.bounds.height
         let shortsImageURL = URL(string: picture.urls.originalLink)
-        shortsImageView.kf.setImage(with: shortsImageURL) { [weak self] _ in
-            self?.shortsImageView.image = self?.shortsImageView.image?.resize(newWidth: screenWidth)
+        shortsImageView.kf.setImage(
+            with: shortsImageURL,
+            options: [
+                .processor(DownsamplingImageProcessor(size: CGSize(width: screenWidth, height: screenHeight))),
+                .scaleFactor(UIScreen.main.scale),
+                .cacheOriginalImage
+            ]
+        ) { [weak self] _ in
             self?.activityIndicatorView.stopAnimating()
         }
     }
