@@ -10,6 +10,7 @@ import Foundation
 
 enum PictureEndPoint: EndPointProtocol {
     case detailPicture(imageID: String)
+    case randomPicture
 }
 
 extension PictureEndPoint {
@@ -26,12 +27,16 @@ extension PictureEndPoint {
         switch self {
         case .detailPicture(let imageID):
             return "/photos/\(imageID)/statistics"
+        case .randomPicture:
+            return "/photos/random"
         }
     }
     
     var httpMethod: HTTPMethod {
         switch self {
         case .detailPicture:
+            return .get
+        case .randomPicture:
             return .get
         }
     }
@@ -44,6 +49,11 @@ extension PictureEndPoint {
         switch self {
         case .detailPicture:
             return nil
+        case .randomPicture:
+            return [
+                "orientation": "portrait",
+                "count": 10
+            ]
         }
     }
 }
