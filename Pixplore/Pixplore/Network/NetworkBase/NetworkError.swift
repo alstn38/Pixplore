@@ -14,6 +14,7 @@ enum NetworkError: Error {
     case forbidden
     case notFound
     case severError
+    case decodeError
     case unknown
     
     var description: String {
@@ -30,6 +31,8 @@ enum NetworkError: Error {
             return "The requested resource doesn’t exist"
         case .severError:
             return "Something went wrong on our end"
+        case .decodeError:
+            return "Decoding failed"
         case .unknown:
             return "Unknown Error"
         }
