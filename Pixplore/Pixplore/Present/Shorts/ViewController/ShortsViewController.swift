@@ -12,6 +12,7 @@ final class ShortsViewController: UIViewController {
     private let shortsView = ShortsView()
     private var timer: Timer?
     private var timerCount: Float = 0.0
+    private var currentPage: Int = 0
     private var shortsPictureArray: [Picture] = [] {
         didSet {
             shortsView.shortsCollectionView.reloadData()
@@ -55,10 +56,8 @@ final class ShortsViewController: UIViewController {
             guard let self else { return }
             switch response {
             case .success(let value):
-                if self.shortsPictureArray.isEmpty {
-                    self.pageToNextPicture()
-                }
                 self.shortsPictureArray.append(contentsOf: value)
+                self.pageToNextPicture()
             case .failure(let error):
                 self.presentWarningAlert(message: error.description)
             }
@@ -66,6 +65,7 @@ final class ShortsViewController: UIViewController {
     }
     
     private func pageToNextPicture() {
+        guard currentPage + 1 < shortsPictureArray.count else { return }
         let duration: Float = 5.0
         timerCount = 0
         shortsView.progressView.setProgress(0, animated: false)
@@ -77,8 +77,14 @@ final class ShortsViewController: UIViewController {
             shortsView.progressView.setProgress(progress, animated: true)
             
             if timerCount >= duration {
-                timerCount = 0
+                currentPage += 1
+                shortsView.shortsCollectionView.scrollToItem(
+                    at: IndexPath(item: currentPage, section: 0),
+                    at: .top,
+                    animated: true
+                )
                 timer.invalidate()
+                pageToNextPicture()
             }
         }
     }
@@ -130,7 +136,8 @@ extension ShortsViewController: UIScrollViewDelegate {
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let pageHeight = scrollView.frame.height
-        let currentPage = Int((scrollView.contentOffset.y + pageHeight / 2) / pageHeight)
+        let scrolledPage = Int((scrollView.contentOffset.y + pageHeight / 2) / pageHeight)
+        currentPage = scrolledPage
         pageToNextPicture()
     }
 }
