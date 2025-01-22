@@ -34,15 +34,19 @@ final class NetworkService {
             switch response.result {
             case .success(let value):
                 completionHandler(.success(value))
-            case .failure(_):
-                let errorType = self.getNetworkError(statusCode: response.response?.statusCode)
+            case .failure(let error):
+                let errorType = self.getNetworkError(error)
                 completionHandler(.failure(errorType))
             }
         }
     }
     
-    private func getNetworkError(statusCode: Int?) -> NetworkError {
-        switch statusCode {
+    private func getNetworkError(_ error: AFError) -> NetworkError {
+        if error.underlyingError is DecodingError {
+            return .decodeError
+        }
+        
+        switch error.responseCode {
         case 400: return .badRequest
         case 401: return .unauthorized
         case 403: return .forbidden
