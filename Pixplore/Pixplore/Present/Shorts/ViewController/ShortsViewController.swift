@@ -10,6 +10,8 @@ import UIKit
 final class ShortsViewController: UIViewController {
     
     private let shortsView = ShortsView()
+    private var timer: Timer?
+    private var timerCount: Int = 0
     private var shortsPictureArray: [Picture] = [] {
         didSet {
             shortsView.shortsCollectionView.reloadData()
@@ -53,9 +55,24 @@ final class ShortsViewController: UIViewController {
             guard let self else { return }
             switch response {
             case .success(let value):
+                if self.shortsPictureArray.isEmpty {
+                    self.pageToNextPicture()
+                }
                 self.shortsPictureArray.append(contentsOf: value)
             case .failure(let error):
                 self.presentWarningAlert(message: error.description)
+            }
+        }
+    }
+    
+    private func pageToNextPicture() {
+        timerCount = 0
+        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
+            self?.timerCount += 1
+
+            if self?.timerCount == 30 {
+                self?.timerCount = 0
+                timer.invalidate()
             }
         }
     }
@@ -98,9 +115,16 @@ extension ShortsViewController: UICollectionViewDelegateFlowLayout {
 
 // MARK: - UIScrollViewDelegate
 extension ShortsViewController: UIScrollViewDelegate {
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.y < 0 {
             self.shortsView.shortsCollectionView.setContentOffset(.zero, animated: false)
         }
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        let pageHeight = scrollView.frame.height
+        let currentPage = Int((scrollView.contentOffset.y + pageHeight / 2) / pageHeight)
+        pageToNextPicture()
     }
 }
