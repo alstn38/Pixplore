@@ -22,6 +22,14 @@ final class ShortsView: UIView {
         return collectionView
     }()
     
+    let progressView: UIProgressView = {
+        let view = UIProgressView()
+        view.trackTintColor = .white
+        view.progressTintColor = .black
+        view.progress = 0
+        return view
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -41,12 +49,20 @@ final class ShortsView: UIView {
     }
     
     private func configureHierarchy() {
-        addSubview(shortsCollectionView)
+        addSubviews(
+            shortsCollectionView,
+            progressView
+        )
     }
     
     private func configureLayout() {
         shortsCollectionView.snp.makeConstraints {
             $0.top.equalTo(self)
+            $0.horizontalEdges.bottom.equalTo(safeAreaLayoutGuide)
+        }
+        
+        progressView.snp.makeConstraints {
+            $0.height.equalTo(2)
             $0.horizontalEdges.bottom.equalTo(safeAreaLayoutGuide)
         }
     }
