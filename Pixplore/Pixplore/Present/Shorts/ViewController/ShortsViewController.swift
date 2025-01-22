@@ -69,13 +69,13 @@ final class ShortsViewController: UIViewController {
         let duration: Float = 5.0
         timerCount = 0
         shortsView.progressView.setProgress(0, animated: false)
-        
-        Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] timer in
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] timer in
             guard let self else { return }
             timerCount += 0.05
             let progress = timerCount / duration
             shortsView.progressView.setProgress(progress, animated: true)
-
+            
             if timerCount >= duration {
                 timerCount = 0
                 timer.invalidate()
