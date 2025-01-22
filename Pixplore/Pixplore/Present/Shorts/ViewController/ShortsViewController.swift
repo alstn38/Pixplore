@@ -11,7 +11,7 @@ final class ShortsViewController: UIViewController {
     
     private let shortsView = ShortsView()
     private var timer: Timer?
-    private var timerCount: Int = 0
+    private var timerCount: Float = 0.0
     private var shortsPictureArray: [Picture] = [] {
         didSet {
             shortsView.shortsCollectionView.reloadData()
@@ -66,12 +66,18 @@ final class ShortsViewController: UIViewController {
     }
     
     private func pageToNextPicture() {
+        let duration: Float = 5.0
         timerCount = 0
-        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
-            self?.timerCount += 1
+        shortsView.progressView.setProgress(0, animated: false)
+        
+        Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] timer in
+            guard let self else { return }
+            timerCount += 0.05
+            let progress = timerCount / duration
+            shortsView.progressView.setProgress(progress, animated: true)
 
-            if self?.timerCount == 30 {
-                self?.timerCount = 0
+            if timerCount >= duration {
+                timerCount = 0
                 timer.invalidate()
             }
         }
