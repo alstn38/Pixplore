@@ -35,9 +35,15 @@ final class ShortsViewController: UIViewController {
         navigationController?.navigationBar.isHidden = true
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        pageToNextPicture()
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationController?.navigationBar.isHidden = false
+        timer?.invalidate()
     }
     
     private func configureCollectionView() {
@@ -65,7 +71,7 @@ final class ShortsViewController: UIViewController {
     }
     
     private func pageToNextPicture() {
-        guard currentPage + 1 < shortsPictureArray.count else { return }
+        guard currentPage + 1 < shortsPictureArray.count && !shortsPictureArray.isEmpty else { return }
         let duration: Float = 5.0
         timerCount = 0
         shortsView.progressView.setProgress(0, animated: false)
