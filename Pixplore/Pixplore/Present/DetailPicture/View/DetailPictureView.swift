@@ -190,10 +190,10 @@ final class DetailPictureView: UIView {
             chartDataEntry.append(dataEntry)
         }
         
-        makeLineChart(chartDataEntry)
+        configureLickChart(chartDataEntry)
     }
     
-    private func makeLineChart(_ chartDataEntry: [ChartDataEntry]) {
+    func configureLickChart(_ chartDataEntry: [ChartDataEntry]) {
         let lineChartDataSet = LineChartDataSet(entries: chartDataEntry)
         lineChartDataSet.mode = .cubicBezier
         lineChartDataSet.lineWidth = 1
