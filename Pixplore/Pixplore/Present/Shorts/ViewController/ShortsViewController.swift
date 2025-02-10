@@ -116,7 +116,8 @@ extension ShortsViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let picture = shortsPictureArray[indexPath.item]
-        let detailPictureViewController = DetailPictureViewController(picture: picture)
+        let detailPictureViewModel = DetailPictureViewModel(picture: picture)
+        let detailPictureViewController = DetailPictureViewController(viewModel: detailPictureViewModel)
         navigationController?.pushViewController(detailPictureViewController, animated: true)
     }
 }

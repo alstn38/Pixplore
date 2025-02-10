@@ -202,7 +202,8 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
             
         case searchView.pictureCollectionView:
             let picture = searchPictureArray[indexPath.item]
-            let detailPictureViewController = DetailPictureViewController(picture: picture)
+            let detailPictureViewModel = DetailPictureViewModel(picture: picture)
+            let detailPictureViewController = DetailPictureViewController(viewModel: detailPictureViewModel)
             navigationController?.pushViewController(detailPictureViewController, animated: true)
             
         default:

@@ -157,7 +157,8 @@ extension TopicViewController: UICollectionViewDelegate, UICollectionViewDataSou
         let topic = selectedTopic[indexPath.section]
         guard let topicPictureArray = topicPictureDictionary[topic] else { return }
         let picture = topicPictureArray[indexPath.row]
-        let detailPictureViewController = DetailPictureViewController(picture: picture)
+        let detailPictureViewModel = DetailPictureViewModel(picture: picture)
+        let detailPictureViewController = DetailPictureViewController(viewModel: detailPictureViewModel)
         navigationController?.pushViewController(detailPictureViewController, animated: true)
     }
 }
